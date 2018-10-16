@@ -1,0 +1,83 @@
+1.	yum install git gcc
+2.	下载二进制https://studygolang.com/dl/golang/go1.11.linux-amd64.tar.gz
+3.	echo "export PATH=$PATH:/usr/local/go/bin" >> /etc/profile
+source /etc/profile
+4.	git clone https://github.com/ethereum/go-ethereum.git
+5.	cd go-ethereum; make all
+6.	将生产的build/bin/添加到PATH中。
+命令行出现geth则编译成功。
+
+一、	Node1节点：（10.26.17.101）
+1.	创世文件genesis.json如下：
+{
+  "config": {
+        "chainId": 14,
+        "homesteadBlock": 0,
+        "eip155Block": 0,
+        "eip158Block": 0
+    },
+  "alloc"      : {},
+  "coinbase"   : "0x0000000000000000000000000000000000000000",
+  "difficulty" : "0x05000",
+  "extraData"  : "",
+  "gasLimit"   : "0x2fefd8",
+  "nonce"      : "0x0000000000000042",
+  "mixhash"    : "0x0000000000000000000000000000000000000000000000000000000000000000",
+  "parentHash" : "0x0000000000000000000000000000000000000000000000000000000000000000",
+  "timestamp"  : "0x00"
+}
+2.	mkdir data1;geth --datadir data1 init genesis.json
+3.	geth --networkid 14 --nodiscover --datadir data1 --rpc --rpcapi net,eth,web3,personal --rpcaddr 10.26.17.101 console
+
+二、	Node2节点：（10.26.17.102）
+1.	将node1创建的genesis.json拷贝到node2，启动第二个节点node2
+2.	mkdir data2;geth  init genesis.json  --datadir data2/
+3.	geth  --networkid 14 --nodiscover --datadir data2/ --port 61911 --rpcapi net,eth,web3,personal --rpc --rpcaddr 10.26.17.102 --rpcport 8101 console
+4.	> personal.newAccount("123")
+
+提示：默认挖矿收益存到第一个账号
+
+1.	创建账户，123是密码。
+> personal.newAccount("123")   
+2.	开始挖矿
+> miner.start()
+3.	第一个账号（默认挖矿收益存到第一个账号）
+first= eth.accounts[0]
+4.	解锁账号
+personal.unlockAccount(first,“123”)
+5.	转账（先解锁发送账号才可以转账）账号必须有引号
+eth.sendTransaction({from : first, to : “0xee1d67b7bfd646e080e18d39c6049a1362177db0” , value : web3.toWei(1,“ether”)})
+6.	获取账号余额（web3可以省略）
+web3.eth.getBalance("0xf2e4cf8222e79b579543a5708ff0dfd1e6e37cfe")
+7.	web3.fromWei（将wei转成eth）
+把 wei 转为如下种类的以太坊单位(还有其他代币token单位)
+kwei/ada，mwei/babbage，gwei/shannon，szabo，finney，ether，kether/grand/einstein，mether，gether，tether
+web3.fromWei(eth.getBalance(eth.accounts[1]),"ether")
+8.	web3.toWei（将eth转换成wei）
+把以太坊单位(包含代币单位)转为 wei
+web3.toWei(1,"ether")
+9.	开启一个终端连到当前节点，这里可以执行挖矿，转账，查询账号等操作，这里不打印挖矿日志log
+geth attach ipc:/home/vadmin/fileData/data1/geth.ipc
+10.	这里显示eth所有log信息
+geth --networkid 14 --nodiscover --datadir data1 --rpc --rpcapi net,eth,web3,personal --rpcaddr 10.26.17.101 console
+11.	查看所有帐户余额：因为geth javascript console是基于javascript的，所以也可以创建js函数。
+> function checkAllBalances() {
+...      var totalBal = 0;
+...      for (var acctNum in eth.accounts) {
+......          var acct = eth.accounts[acctNum];
+......          var acctBal = web3.fromWei(eth.getBalance(acct), "ether");
+......          totalBal += parseFloat(acctBal);
+......          console.log("  eth.accounts[" + acctNum + "]: \t" + acct + " \tbalance: " + acctBal + " ether");
+......      }
+...      console.log("  Total balance: " + totalBal + " ether");
+...  };
+undefined
+> checkAllBalances()
+  eth.accounts[0]:  0xf2e4cf8222e79b579543a5708ff0dfd1e6e37cfe  balance: 425 ether
+  eth.accounts[1]:  0x69c9e2942557b25e4967672a72ee7b8f8c531a1c  balance: 0 ether
+  Total balance: 425 ether
+undefined
+•	创建data1 作为key和geth存储目录
+•	开放rpc api:net,eth,web3,personal
+•	区块链数据存储目录 /home/vadmin/.ethash
+•	远程通信的rpc地址 http://10.26.17.101:8545
