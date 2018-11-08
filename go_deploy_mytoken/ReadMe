@@ -1,4 +1,9 @@
-solc --bin -o  . token.sol 
-solc --abi -o  . token.sol 
-abigen  --abi MyToken.abi  --pkg mytoken --out mytoken.go --bin MyToken.bin 
+1 solc --bin -o  . token.sol 
+  solc --abi -o  . token.sol 
+2 abigen  --abi MyToken.abi  --pkg mytoken --out mytoken.go --bin MyToken.bin 
+
+3 geth --networkid=15 --nodiscover --rpc --rpcport=8545 --ws --wsport=8546 --rpccorsdomain="*" --datadir=/root/1031-dev-eth/ethdev --rpcapi "db,eth,net,web3" console
+4 go run main.go //部署合约
+5 go run get_balance.go //查询账户余额
+
 
