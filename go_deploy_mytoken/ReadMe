@@ -1,0 +1,4 @@
+solc --bin -o  . token.sol 
+solc --abi -o  . token.sol 
+abigen  --abi MyToken.abi  --pkg mytoken --out mytoken.go --bin MyToken.bin 
+
