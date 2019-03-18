@@ -1,3 +1,4 @@
+                                             # ETH+IPFS Dapp development process
 1 Client browser: install metamask wallet , keep mnemonic, switch Ropsten Network;
 
 2 Project code: install truffle, npm; truffle unbox react;
@@ -21,3 +22,6 @@
      5) npm install; npm start
      
  3 Client browser: visit url: http://www.website.com/
+   阿里云购买网址： http://www.website.com/但未备案，太麻烦了；
+   使用国外免费域名解析：https://www.cloudflare.com;
+   使用免费infura测试节点： https://infura.io/
